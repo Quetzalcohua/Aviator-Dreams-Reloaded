@@ -1,43 +1,36 @@
 plugins {
-    id 'com.gradleup.shadow'
+    id 'net.fabricmc.fabric-loom' version '1.17.20'
 }
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
+base { archivesName = "$rootProject.archives_name-fabric" }
+repositories {
+    maven { url = 'https://maven.conczin.net/Artifacts' }
 }
-
-configurations {
-    common {
-        canBeResolved = true
-        canBeConsumed = false
-    }
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-
-    // Files in this configuration will be bundled into your mod using the Shadow plugin.
-    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
-    shadowBundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
+sourceSets.main {
+    java.srcDir rootProject.file('common/src/main/java')
+    resources.srcDir rootProject.file('common/src/main/resources')
 }
-
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+}
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version+${rootProject.minecraft_version}"
-
-    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
-
-    // modImplementation("com.terraformersmc:modmenu:${rootProject.mod_menu_version}")
-
-    modImplementation("net.conczin:immersive_aircraft:${rootProject.immersive_aircraft_version}+${rootProject.minecraft_version}+fabric")
+    minecraft "com.mojang:minecraft:$rootProject.minecraft_version"
+    implementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+    implementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version+$rootProject.minecraft_version"
+    // Aircraft publishes its optional development viewers as runtime dependencies.
+    // Neither viewer is required by this addon or by Aircraft at runtime.
+    implementation("net.conczin:immersive_aircraft:$rootProject.immersive_aircraft_version+$rootProject.minecraft_version+fabric") {
+        exclude group: "mezz.jei"
+        exclude group: "me.shedaniel", module: "RoughlyEnoughItems-fabric"
+    }
 }
-
+jar {
+    from(rootProject.file('LICENSE'))
+}
 processResources {
     def props = [
             "id"                         : project.id,
@@ -58,13 +51,4 @@ processResources {
 
     inputs.properties props
     filesMatching("fabric.mod.json") { expand props }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
-}
-
-remapJar {
-    inputFile.set shadowJar.archiveFile
 }

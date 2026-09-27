@@ -1,3 +1,11 @@
+# Minecraft 26.1.2 Fabric compatibility branch
+
+Build and dependency instructions: [BUILDING-26.1.2.md](BUILDING-26.1.2.md).
+Measured results and limitations: [PORT-VALIDATION.md](PORT-VALIDATION.md).
+This branch does not build NeoForge. Original upstream description and credits follow.
+
+---
+
 This mod is available on [Modrinth](https://modrinth.com/mod/aviator-dreams-reloaded) and [Curseforge](https://www.curseforge.com/minecraft/mc-mods/aviator-dreams-reloaded)
 
 <div align="center">

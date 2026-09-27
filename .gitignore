@@ -121,3 +121,9 @@ run/
 
 
 page
+.tools/
+.reference/
+.deps/
+.gradle-user-home/
+run-smoke/
+logs/
