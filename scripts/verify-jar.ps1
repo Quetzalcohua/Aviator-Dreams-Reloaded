@@ -33,4 +33,3 @@ try {
     Write-Output 'This static package check does not verify gameplay or rendering.'
 } finally { $zip.Dispose() }
 Get-FileHash $Jar -Algorithm SHA256
-

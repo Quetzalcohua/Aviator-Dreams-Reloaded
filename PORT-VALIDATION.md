@@ -14,7 +14,7 @@
   `4FDC6A0604574DF954721BD4BC8E5771BDE138E45E29B421FF50D4319E04EEC9`。
 - `./scripts/build.ps1 -JavaHome ./.tools/jdk-25 -Clean`：**PASS**。最终一次 clean 构建 31 秒，7 个任务（6 executed、1 up-to-date）。
 - `./scripts/verify-jar.ps1`：**PASS**。检查 Fabric 入口、精确 Minecraft 版本、最低依赖、Java25 class major=69、LICENSE、9 套实体数据/模型/物品资源及 8 个配方。
-- Gradle 的 `test` 为 **NO-SOURCE**，不能称作单元测试通过。GitHub Actions 已改为 Java25/Fabric，但远端 CI 尚未执行。
+- Gradle 的 `test` 为 **NO-SOURCE**，不能称作单元测试通过。GitHub Actions 已通过：run `36293008333`，提交 `53a52d0`，Linux/JDK25 clean 构建、发布包校验及产物上传全部成功。
 
 ## 实际移植范围
 
@@ -54,10 +54,11 @@
 | 9 个实体生成/可见模型 | PASS（最终交付哈希） | 每个实体均有单独截图；不等于完整外观无缺陷 |
 | DC1、K100 交互上车 | PASS（辅助交互） | 正常客户端 interact 入口；日志确认当前 vehicle 类型 |
 | K100 驾驶 | INCONCLUSIVE | KeyMapping 模拟按键后未观察到位移；不能据此认定真实键盘驾驶通过或断言游戏故障 |
-| 起飞、飞行、转向、降落 | NOT VERIFIED | 没有可归属到受控步骤的完整飞行记录 |
+| DC1 地面移动、起飞、爬升 | PASS（有界补测） | 创造模式默认配置，通过真实 Space 按键增加油门，完成正常物理链路；详见 CONTROL-VALIDATION.md |
+| 其他机型驾驶、转向、降落 | NOT VERIFIED | 不将 DC1 的一次起飞扩大为全部飞机与完整飞行流程通过 |
 | 燃料、库存、升级、染色、配方实际合成、音效 | NOT VERIFIED | 仅资源打包/加载，不声称玩法通过 |
 | 专用服务器、多玩家 | NOT TESTED | 单人集成服务器不等于专服/联机测试 |
-| GitHub CI/发布 | NOT RUN | 主代理负责审核、提交、推送；未创建 Release |
+| GitHub CI/分支 | PASS | 兼容分支已推送，run 36293008333 成功；未创建 Release |
 
 实体清单（命名空间均为 `aviator_dream`）：
 `douglas_dc1`、`douglas_dc2`、`douglas_c47`、`lockheed_l1049g`、`test`、`dehavilland_dh106`、`fokker_fviib3m`、`fokker_fviia`、`toyota_stout_k100`。
@@ -70,4 +71,3 @@
 - 最初手工启动工作目录设在仓库根，Aircraft 相对 `./config` 路径产生配置 FileNotFound；将工作目录改为独立 `run-smoke` 后不再出现。它不是 addon API 崩溃。
 - 第一次 Gradle 失败为 Aircraft Maven POM 引入可选 JEI/REI 的解析问题，已针对性排除；未改用 SNAPSHOT 前置。
 - 上游 LICENSE/元数据为 GPLv3，而原 README 写 CC0（排除纹理/bbmodel），存在上游许可表述不一致。原文、作者及 LICENSE 均保留，移植不擅自重新授权。发布前由主代理决定是否向原作者进一步澄清。
-
